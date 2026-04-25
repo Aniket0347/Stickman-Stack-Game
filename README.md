@@ -1,2 +1,5 @@
-# Stickman-Stack-Game
-A casual endless stacking mobile game built in Unity where a stickman jumps on incoming platforms to stack them as high as possible.
+# StackMan Runner 🧍‍♂️📦
+
+A casual, endless, skill-based mobile game built with Unity where you
+control a stickman character jumping on platforms that fly in from
+both sides of the screen — stacking them as high as you can go.
