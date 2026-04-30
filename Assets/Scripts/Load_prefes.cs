@@ -21,4 +21,9 @@ public class Load_prefes : MonoBehaviour
             body.GetComponent<SkinnedMeshRenderer>().material = mats[savedColorIndex];
         }
     }
+
+    public void Exit()
+    {
+        Application.Quit();
+    }
 }

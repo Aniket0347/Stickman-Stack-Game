@@ -12,21 +12,22 @@ public class Stickman : MonoBehaviour
     private GameObject Stopper;
     public List<GameObject> cubes;
     public GameObject[] impact_fx;
+    public GameObject[] player_Body; 
     public bool impact = false;
     public GameObject canvas;
-
-    
     private bool processingOnit = false;
-
+    public GameObject dead_Fx;
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<Animator>();
         Stopper = GameObject.FindWithTag("Use");
+ 
     }
 
     void Update()
     {
+       
         if (Input.GetMouseButtonDown(0))
         {
             Jump();
@@ -36,23 +37,17 @@ public class Stickman : MonoBehaviour
         if (impact == false)
         {
             foreach (GameObject fx in impact_fx)
-            {
                 fx.SetActive(false);
-            }
         }
 
         if (isGrounded == true && impact == true)
-        {
             StartCoroutine(Runfx());
-        }
     }
 
     IEnumerator Runfx()
     {
         foreach (GameObject fx in impact_fx)
-        {
             fx.SetActive(true);
-        }
         yield return new WaitForSeconds(0.2f);
         impact = false;
     }
@@ -70,19 +65,14 @@ public class Stickman : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
-        {
             isGrounded = true;
-        }
     }
 
     private void OnTriggerEnter(Collider other)
     {
-       
         if (other.gameObject.tag == "Onit" && !processingOnit)
         {
             processingOnit = true;
-
-            print("Onit");
             isGrounded = true;
 
             GameObject Hurdel = other.transform.parent.gameObject;
@@ -94,18 +84,29 @@ public class Stickman : MonoBehaviour
 
             Hurdel.GetComponent<Move>().IsMove = false;
 
-           
             Stack stackComp = Stopper.GetComponent<Stack>();
             if (stackComp != null && stackComp.canStack)
             {
                 Transform ChangeY = stackComp.Stacker[1].transform;
-                ChangeY.position = new Vector3(Hurdel.transform.position.x - 0.4f, ChangeY.position.y, ChangeY.position.z);
+
+                // Read which side this prefab came from so the offset is correct
+                PrefabDirection dirComp = Hurdel.GetComponent<PrefabDirection>();
+                bool fromRight = dirComp != null ? dirComp.comingFromRight : true;
+
+                // Prefab came from RIGHT → it approached from the right side → offset left  (-0.4)
+                // Prefab came from LEFT  → it approached from the left  side → offset right (+0.4)
+                float xOffset = fromRight ? -0.4f : 0.4f;
+
+                ChangeY.position = new Vector3(
+                    Hurdel.transform.position.x + xOffset,
+                    ChangeY.position.y,
+                    ChangeY.position.z
+                );
+
                 stackComp.Stacked();
             }
 
             other.gameObject.SetActive(false);
-
-            
             StartCoroutine(ResetOnitGuard());
         }
 
@@ -118,13 +119,20 @@ public class Stickman : MonoBehaviour
                 c.GetComponent<Move>().IsMove = false;
                 cubes.Add(c);
             }
+     
             SaveHighScore();
-            print("died");
-            rb.AddForce(-40f, 200f, 0);
+            rb.AddForce(0f, 200f, 0);
+            jumpForce=0f;
+            foreach (GameObject b in player_Body)
+            {
+                dead_Fx.SetActive(true);
+                b.SetActive(false);
+            }
             StartCoroutine(loadScene());
         }
     }
 
+ 
     IEnumerator ResetOnitGuard()
     {
         yield return new WaitForSeconds(0.6f);
@@ -143,7 +151,7 @@ public class Stickman : MonoBehaviour
 
     IEnumerator loadScene()
     {
-        yield return new WaitForSeconds(5f);
-        SceneManager.LoadScene("SampleScene");
+        yield return new WaitForSeconds(1.7f);
+        SceneManager.LoadScene("Game");
     }
 }

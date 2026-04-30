@@ -1,23 +1,22 @@
 using UnityEngine;
 
+using UnityEngine;
+
 public class Move : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-
     public bool IsMove = true;
     public float speed;
 
+    // Set by Spawn.cs at runtime:
+    //  1 = coming from right → moves left  (original)
+    // -1 = coming from left  → moves right (new)
+    [HideInInspector] public float direction = 1f;
 
-
-    // Update is called once per frame
     void Update()
     {
-        if (IsMove == true)
+        if (IsMove)
         {
-            transform.position -= new Vector3(speed * Time.deltaTime, 0, 0);
+            transform.position -= new Vector3(direction * speed * Time.deltaTime, 0, 0);
         }
     }
-
-
-
 }
