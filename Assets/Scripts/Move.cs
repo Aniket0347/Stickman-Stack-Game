@@ -1,6 +1,5 @@
 using UnityEngine;
 
-using UnityEngine;
 
 public class Move : MonoBehaviour
 {
@@ -16,6 +15,7 @@ public class Move : MonoBehaviour
     {
         if (IsMove)
         {
+            speed = Mathf.Min(speed, 0.7f); // hard cap
             transform.position -= new Vector3(direction * speed * Time.deltaTime, 0, 0);
         }
     }
